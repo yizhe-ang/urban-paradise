@@ -7,7 +7,7 @@ import React from "react";
 import { useGLTF } from "@react-three/drei";
 
 export function Tree(props) {
-  const { nodes, materials } = useGLTF("./models/Tree.glb");
+  const { nodes, materials } = useGLTF("./urban-paradise/models/Tree.glb");
   return (
     <group {...props} dispose={null}>
       <group name="Tree_4" rotation={[-Math.PI / 2, 0, 0]} scale={31.046}>
@@ -26,4 +26,4 @@ export function Tree(props) {
   );
 }
 
-useGLTF.preload("./models/Tree.glb");
+useGLTF.preload("./urban-paradise/models/Tree.glb");
