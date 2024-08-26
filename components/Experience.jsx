@@ -45,14 +45,14 @@ const Experience = () => {
     const time = clock.getElapsedTime();
 
     // FIXME: Kills performance
-    // pointLightRef.current.position.x = Math.sin(time * 0.5) * 30;
+    pointLightRef.current.position.x = Math.sin(time * 0.5) * 30;
   });
 
   return (
     <>
       {/* STAGING */}
       {/* <color attach="background" args={["lightblue"]} /> */}
-      <color attach="background" args={["#c6e5db"]} />
+      {/* <color attach="background" args={["#c6e5db"]} /> */}
       {/* <fog attach="fog" args={["black", 10, 30]} /> */}
 
       <Environment resolution={128}>

@@ -28,7 +28,7 @@ const Water = ({ size, gridData, swarm }) => {
         <MeshTransmissionMaterial
           color={new THREE.Color("#55aaff")
             .convertSRGBToLinear()
-            .multiplyScalar(3)}
+            .multiplyScalar(5)}
           ior={1.4}
           thickness={1.5}
           roughness={2}
