@@ -15,7 +15,7 @@ const [LeavesInstances, Leaves] = createInstances();
 const noise2D = createNoise2D();
 
 export default function Trees({ size, gridData, swarm }) {
-  const { nodes, materials } = useGLTF("/models/Tree.glb");
+  const { nodes, materials } = useGLTF("./models/Tree.glb");
 
   const instancesProps = {
     limit: size ** 2,
@@ -94,4 +94,4 @@ export default function Trees({ size, gridData, swarm }) {
   );
 }
 
-useGLTF.preload("/models/Tree.glb");
+useGLTF.preload("./models/Tree.glb");
