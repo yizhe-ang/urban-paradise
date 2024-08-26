@@ -1,0 +1,50 @@
+{
+  "sheetsById": {
+    "sheet": {
+      "staticOverrides": {
+        "byObject": {
+          "floor": {
+            "rotation": {
+              "z": -0.34,
+              "y": 0.6500000000000004,
+              "x": -0.78
+            },
+            "position": {
+              "y": 0.3500000000000002
+            }
+          },
+          "water": {
+            "rotation": {
+              "x": -0.7900000000000007,
+              "y": 0.5999999999999994,
+              "z": 0.04999999999999983
+            },
+            "position": {
+              "y": 2.6499999999999786
+            }
+          },
+          "pointLight": {
+            "intensity": 5,
+            "distance": 200,
+            "decay": 0,
+            "position": {
+              "y": 20,
+              "x": 10,
+              "z": 10
+            },
+            "color": {
+              "r": 0.8901960784313725,
+              "g": 0.43137254901960786,
+              "b": 0.43137254901960786,
+              "a": 1
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitionVersion": "0.4.0",
+  "revisionHistory": [
+    "xmXbkf4X3MSFbkk_"
+  ]
+}

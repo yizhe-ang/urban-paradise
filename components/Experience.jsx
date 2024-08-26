@@ -74,7 +74,7 @@ const Experience = () => {
 
       {/* LIGHTS */}
       <ambientLight intensity={0.1} />
-      <pointLight
+      <e.pointLight
         ref={pointLightRef}
         theatreKey="pointLight"
         // color={
