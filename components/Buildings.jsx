@@ -43,11 +43,11 @@ const Buildings = ({ size = 40, gridData, swarm }) => {
   const terrainTextures = useMemo(() => {
     const textures = new TextureAtlas();
     textures.Load("terrain", [
-      "/textures/dirt.png",
-      "/textures/dirt2.jpg",
-      "/textures/grass.jpg",
-      "/textures/sand.jpg",
-      "/textures/stone.jpg",
+      "./textures/dirt.png",
+      "./textures/dirt2.jpg",
+      "./textures/grass.jpg",
+      "./textures/sand.jpg",
+      "./textures/stone.jpg",
     ]);
 
     textures.onLoad = () => {
