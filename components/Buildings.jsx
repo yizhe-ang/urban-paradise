@@ -5,13 +5,12 @@ import { randFloat, randInt } from "three/src/math/MathUtils";
 import CustomShaderMaterial from "three-custom-shader-material";
 import CustomShaderMaterialVanilla from "three-custom-shader-material/vanilla";
 import * as THREE from "three";
-import { brickTile, tile } from "@/shaders/patterns";
+import { box, brickTile, tile } from "@/shaders/patterns";
 import { iching } from "@/shaders/iching";
 import { resolveLygia } from "resolve-lygia";
 import { colors, palettesGrouped } from "@/lib/palettes";
 import { shuffle } from "d3-array";
-import { fbm, noise } from "@/shaders/common";
-import { useControls } from "leva";
+import { fbm, noise, rotate2D } from "@/shaders/common";
 import * as easing from "maath/easing";
 import * as tome from "chromotome";
 import TextureAtlas from "@/lib/textureAtlas";
@@ -31,7 +30,7 @@ const palettes = [
 
 const noise2D = createNoise2D();
 
-const Buildings = ({ size = 40, gridData }) => {
+const Buildings = ({ size = 40, gridData, swarm }) => {
   const uniforms = useMemo(() => {
     return {
       uTime: { value: 0 },
@@ -75,10 +74,6 @@ const Buildings = ({ size = 40, gridData }) => {
     uniforms.uTime.value += delta;
   });
 
-  const { swarm } = useControls("Buildings", {
-    swarm: false,
-  });
-
   return (
     <Instances limit={size ** 2} castShadow receiveShadow frustumCulled={false}>
       <boxGeometry args={[1, 1, 1]} />
@@ -117,6 +112,7 @@ const Buildings = ({ size = 40, gridData }) => {
       <InstancedAttribute name="aIndex" defaultValue={[0, 0]} />
       <InstancedAttribute name="aColor1" defaultValue={[0, 0, 0]} />
       <InstancedAttribute name="aColor2" defaultValue={[0, 0, 0]} />
+      <InstancedAttribute name="aColor3" defaultValue={[0, 0, 0]} />
       <InstancedAttribute name="aType" defaultValue={0} />
       {Array.from({ length: size }).map((_, i) => {
         return Array.from({ length: size }).map((_, j) => {
@@ -139,6 +135,8 @@ const Buildings = ({ size = 40, gridData }) => {
 
           const palette = tome.get(palettes[randInt(0, palettes.length - 1)]);
 
+          const shuffledColors = shuffle(palette.colors);
+
           // TODO: Shuffle?
           // let selectedColors = palette.map((i) => {
           //   return colors[i].rgb.map((d) => d / 255);
@@ -158,13 +156,8 @@ const Buildings = ({ size = 40, gridData }) => {
               // aColor1={selectedColors[0]}
               // aColor2={selectedColors[1]}
               aColor1={new THREE.Color(palette.background)}
-              aColor2={
-                new THREE.Color(
-                  palette.colors[
-                    Math.floor(Math.random() * palette.colors.length)
-                  ]
-                )
-              }
+              aColor2={new THREE.Color(shuffledColors[0])}
+              aColor3={new THREE.Color(shuffledColors[1])}
               // Whether to place a building
               aType={isTerrain ? randInt(1, numTerrains) : 0}
               swarm={swarm}
@@ -174,84 +167,6 @@ const Buildings = ({ size = 40, gridData }) => {
       })}
     </Instances>
   );
-};
-
-const Building = ({ size, swarm, position, ...props }) => {
-  const ref = useRef();
-
-  const currentPosition = useMemo(() => {
-    return {
-      x: position[0],
-      y: position[1],
-      z: position[2],
-    };
-  }, [position]);
-
-  const particle = useMemo(() => {
-    const t = Math.random() * 100;
-    const factor = 20 + Math.random() * 100;
-    const speed = 0.01 + Math.random() / 200;
-    const xFactor = -50 + Math.random() * 100;
-    const yFactor = -50 + Math.random() * 100;
-    const zFactor = -50 + Math.random() * 100;
-
-    return { t, factor, speed, xFactor, yFactor, zFactor, mx: 0, my: 0 };
-  }, []);
-
-  useFrame(({ mouse }, delta) => {
-    if (!swarm) {
-      easing.dampE(ref.current.rotation, [0, 0, 0], 0.25, delta);
-
-      // Advance
-      currentPosition.z += delta;
-      currentPosition.y -= delta;
-
-      easing.damp3(ref.current.position, currentPosition, 0.25, delta);
-
-      // Wrap buildings
-      if (currentPosition.z > size / 2) {
-        currentPosition.z -= size;
-        currentPosition.y += size;
-
-        ref.current.position.z -= size;
-        ref.current.position.y += size;
-        // TODO: Change random values
-      }
-    } else {
-      // Swarm behaviour
-      // FIXME: Why are the buildings disappearing?
-      let { t, factor, speed, xFactor, yFactor, zFactor } = particle;
-      t = particle.t += speed / 2;
-      const a = Math.cos(t) + Math.sin(t * 1) / 10;
-      const b = Math.sin(t) + Math.cos(t * 2) / 10;
-      const s = Math.cos(t);
-      particle.mx += (mouse.x * 1000 - particle.mx) * 0.01;
-      particle.my += (mouse.y * 1000 - 1 - particle.my) * 0.01;
-
-      easing.damp3(
-        ref.current.position,
-        [
-          (particle.mx / 10) * a +
-            xFactor +
-            Math.cos((t / 10) * factor) +
-            (Math.sin(t * 1) * factor) / 10,
-          (particle.my / 10) * b +
-            yFactor +
-            Math.sin((t / 10) * factor) +
-            (Math.cos(t * 2) * factor) / 10,
-          (particle.my / 10) * b +
-            zFactor +
-            Math.cos((t / 10) * factor) +
-            (Math.sin(t * 3) * factor) / 10,
-        ],
-        0.25,
-        delta
-      );
-      ref.current.rotation.set(s * 5, s * 5, s * 5);
-    }
-  });
-
-  return <Instance ref={ref} {...props} />;
 };
 
 const vert = /* glsl */ `
@@ -265,6 +180,7 @@ const vert = /* glsl */ `
   attribute vec2 aIndex;
   attribute vec3 aColor1;
   attribute vec3 aColor2;
+  attribute vec3 aColor3;
   attribute float aType;
 
   varying vec2 vUv;
@@ -273,6 +189,7 @@ const vert = /* glsl */ `
   varying float vRandom1;
   varying vec3 vColor1;
   varying vec3 vColor2;
+  varying vec3 vColor3;
   varying float vType;
 
   void main() {
@@ -288,6 +205,7 @@ const vert = /* glsl */ `
     vRandom1 = aRandom1;
     vColor1 = aColor1;
     vColor2 = aColor2;
+    vColor3 = aColor3;
     vType = aType;
   }
 `;
@@ -302,11 +220,14 @@ const frag = resolveLygia(/* glsl */ `
   varying float vRandom1;
   varying vec3 vColor1;
   varying vec3 vColor2;
+  varying vec3 vColor3;
   varying float vType;
 
+  ${rotate2D}
   ${noise}
   ${fbm}
   ${tile}
+  ${box}
   ${iching}
   ${brickTile}
 
@@ -333,6 +254,14 @@ const frag = resolveLygia(/* glsl */ `
     // TODO: Add random offset
     float tiles = iching(st, floor(vRandom1 * 64.0), 0.05, 0.3);
     color = mix(color, vColor2, tiles);
+
+    // Tile pattern (diamond)
+    vec2 diamondSt = tile(st, 5.0);
+    diamondSt = rotate2D(diamondSt, PI * 0.25);
+    diamondSt += 0.05;
+    // TODO: Offset
+    float diamonds = box(diamondSt, vec2(0.5), 0.01);
+    color = mix(color, vColor3, diamonds * step(0.9, vRandom));
 
     // Add windows
     // TODO: Should have 3D effect

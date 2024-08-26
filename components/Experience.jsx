@@ -14,17 +14,21 @@ import * as THREE from "three";
 import Terrain from "./Terrain";
 import Water from "./Water";
 import Trees from "./Trees";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { range } from "d3-array";
+import { useControls } from "leva";
+import { useFrame } from "@react-three/fiber";
 
 const size = 40;
 
 const Experience = () => {
+  const pointLightRef = useRef();
+
   // Generate grid data
   const gridData = useMemo(() => {
     return range(size).map((i) => {
       return range(size).map((j) => {
-        const isTerrain = Math.random() < 0.3;
+        const isTerrain = Math.random() < 0.4;
 
         return {
           isTerrain,
@@ -33,6 +37,17 @@ const Experience = () => {
     });
   }, []);
 
+  const { swarm } = useControls("Buildings", {
+    swarm: false,
+  });
+
+  useFrame(({ clock }) => {
+    const time = clock.getElapsedTime();
+
+    // FIXME: Kills performance
+    // pointLightRef.current.position.x = Math.sin(time * 0.5) * 30;
+  });
+
   return (
     <>
       {/* STAGING */}
@@ -40,7 +55,7 @@ const Experience = () => {
       <color attach="background" args={["#c6e5db"]} />
       {/* <fog attach="fog" args={["black", 10, 30]} /> */}
 
-      {/* <Environment resolution={128}>
+      <Environment resolution={128}>
         <Lightformer
           form="circle"
           intensity={1}
@@ -54,19 +69,20 @@ const Experience = () => {
           position={[-5, 1, -1]}
           scale={[50, 2, 1]}
         />
-      </Environment> */}
-      <Environment files="/envmaps/envmap.hdr"></Environment>
+      </Environment>
+      {/* <Environment files="/envmaps/envmap.hdr"></Environment> */}
 
       {/* LIGHTS */}
       <ambientLight intensity={0.1} />
-      {/* <directionalLight castShadow intensity={1.0} position={[5, 25, 20]} /> */}
       <e.pointLight
+        ref={pointLightRef}
         theatreKey="pointLight"
         color={
+          // #ff500f
           new THREE.Color("#FFCB8E").convertSRGBToLinear()
           // .convertSRGBToLinear()
         }
-        intensity={80}
+        intensity={5}
         distance={200}
         position={[10, 20, 10]}
         castShadow
@@ -89,11 +105,11 @@ const Experience = () => {
       <OrbitControls />
 
       {/* SCENE */}
-      <Buildings size={size} gridData={gridData} />
+      <Buildings size={size} gridData={gridData} swarm={swarm} />
 
-      {/* <Water size={size} gridData={gridData} /> */}
+      <Water size={size} gridData={gridData} swarm={swarm} />
 
-      {/* <Trees size={size} gridData={gridData} /> */}
+      <Trees size={size} gridData={gridData} swarm={swarm} />
 
       {/* TODO: Add grain */}
     </>

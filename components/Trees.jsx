@@ -7,13 +7,14 @@ import React from "react";
 import { createInstances, useGLTF } from "@react-three/drei";
 import { createNoise2D } from "simplex-noise";
 import { randFloat, randInt } from "three/src/math/MathUtils";
+import TransformedInstance from "./TransformedInstance";
 
 const [WoodInstances, Wood] = createInstances();
 const [LeavesInstances, Leaves] = createInstances();
 
 const noise2D = createNoise2D();
 
-export default function Trees({ size, gridData }) {
+export default function Trees({ size, gridData, swarm }) {
   const { nodes, materials } = useGLTF("/models/Tree.glb");
 
   const instancesProps = {
@@ -58,7 +59,7 @@ export default function Trees({ size, gridData }) {
 
             return (
               <>
-                <Wood
+                {/* <Wood
                   position={position}
                   rotation={[-Math.PI / 2, 0, 0]}
                   scale={[scaleX, scaleY, scaleX]}
@@ -67,6 +68,22 @@ export default function Trees({ size, gridData }) {
                   position={position}
                   rotation={[-Math.PI / 2, 0, 0]}
                   scale={[scaleX, scaleY, scaleZ]}
+                /> */}
+                <TransformedInstance
+                  I={Wood}
+                  position={position}
+                  rotation={[-Math.PI / 2, 0, 0]}
+                  scale={[scaleX, scaleY, scaleX]}
+                  swarm={swarm}
+                  size={size}
+                />
+                <TransformedInstance
+                  I={Leaves}
+                  position={position}
+                  rotation={[-Math.PI / 2, 0, 0]}
+                  scale={[scaleX, scaleY, scaleZ]}
+                  swarm={swarm}
+                  size={size}
                 />
               </>
             );

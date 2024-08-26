@@ -4,10 +4,11 @@ import { editable as e } from "@theatre/r3f";
 import { Instance, Instances } from "@react-three/drei";
 import CustomShaderMaterial from "three-custom-shader-material";
 import { createNoise2D } from "simplex-noise";
+import TransformedInstance from "./TransformedInstance";
 
 const noise2D = createNoise2D();
 
-const Water = ({ size, gridData }) => {
+const Water = ({ size, gridData, swarm }) => {
   // FIXME: How to animate water?
 
   const waterTexture = useTexture("/textures/water.jpg");
@@ -51,11 +52,12 @@ const Water = ({ size, gridData }) => {
             const scaleY = noise * 1;
 
             return (
-              <Instance
+              <TransformedInstance
                 key={i * size + j}
                 size={size}
                 position={[x, y + scaleY / 2 - size / 2, z]}
                 scale={[1, scaleY, 1]}
+                swarm={swarm}
               />
             );
           });

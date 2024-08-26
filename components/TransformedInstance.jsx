@@ -8,6 +8,7 @@ const TransformedInstance = ({
   size,
   swarm,
   position,
+  rotation = [0, 0, 0],
   ...props
 }) => {
   const ref = useRef();
@@ -33,11 +34,11 @@ const TransformedInstance = ({
 
   useFrame(({ mouse }, delta) => {
     if (!swarm) {
-      easing.dampE(ref.current.rotation, [0, 0, 0], 0.25, delta);
+      easing.dampE(ref.current.rotation, rotation, 0.25, delta);
 
       // Advance
-      currentPosition.z += delta;
-      currentPosition.y -= delta;
+      currentPosition.z += delta * 1.5;
+      currentPosition.y -= delta * 1.5;
 
       easing.damp3(ref.current.position, currentPosition, 0.25, delta);
 
