@@ -16,7 +16,12 @@ const sheet = getProject("project", { state }).sheet("sheet");
 export default function Home() {
   return (
     <div className="fixed inset-0">
-      <div className="absolute inset-0 bg-[url('/bg.svg')] bg-no-repeat bg-cover opacity-50" />
+      <div
+        className="absolute inset-0 bg-no-repeat bg-cover opacity-50"
+        style={{
+          backgroundImage: "url('./bg.svg')",
+        }}
+      />
       <Canvas shadows>
         <SheetProvider sheet={sheet}>
           <Experience />
