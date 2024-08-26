@@ -11,7 +11,7 @@ const noise2D = createNoise2D();
 const Water = ({ size, gridData, swarm }) => {
   // FIXME: How to animate water?
 
-  const waterTexture = useTexture("/textures/water.jpg");
+  const waterTexture = useTexture("./textures/water.jpg");
   waterTexture.repeat = new THREE.Vector2(1, 1);
   waterTexture.wrapS = THREE.RepeatWrapping;
   waterTexture.wrapT = THREE.RepeatWrapping;
