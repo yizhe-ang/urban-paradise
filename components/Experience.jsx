@@ -74,14 +74,15 @@ const Experience = () => {
 
       {/* LIGHTS */}
       <ambientLight intensity={0.1} />
-      <e.pointLight
+      <pointLight
         ref={pointLightRef}
         theatreKey="pointLight"
-        color={
-          // #ff500f
-          new THREE.Color("#FFCB8E").convertSRGBToLinear()
-          // .convertSRGBToLinear()
-        }
+        // color={
+        //   // #ff500f
+        //   new THREE.Color("#FFCB8E").convertSRGBToLinear()
+        //   // .convertSRGBToLinear()
+        // }
+        color={new THREE.Color("#e36e6e")}
         intensity={5}
         distance={200}
         position={[10, 20, 10]}
