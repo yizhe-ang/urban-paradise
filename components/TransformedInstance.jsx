@@ -37,8 +37,8 @@ const TransformedInstance = ({
       easing.dampE(ref.current.rotation, rotation, 0.25, delta);
 
       // Advance
-      currentPosition.z += delta * 1.5;
-      currentPosition.y -= delta * 1.5;
+      currentPosition.z += delta * 2;
+      currentPosition.y -= delta * 2;
 
       easing.damp3(ref.current.position, currentPosition, 0.25, delta);
 
